@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>學測倒數</title>
+  <style>
+    /* 網頁全局樣式 */
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #e0f7ff, #f5e0ff); /* 漸層背景 */
+      color: #333;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      min-height: 100vh;
+      transition: transform 0.3s ease; /* 平滑縮放過渡 */
+    }
+
+    /* 全螢幕時放大 */
+    body.fullscreen {
+      transform: scale(1.5); /* 放大比例 */
+    }
+
+    /* 標題樣式 */
+    h1 {
+      color: #6a0dad; /* 紫色字體 */
+      font-size: 3em;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    /* 倒數區塊容器 */
+    .countdown-container {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin: 20px 0;
+    }
+
+    /* 單個倒數方塊 */
+    .countdown-box {
+      background: linear-gradient(135deg, #7f5dff, #4da8ff); /* 紫藍漸層 */
+      color: white;
+      width: 120px;
+      height: 120px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      border-radius: 15px; /* 圓角 */
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* 陰影 */
+    }
+
+    .countdown-box span {
+      font-size: 2em;
+      font-weight: bold;
+    }
+
+    .countdown-box small {
+      font-size: 1em;
+      margin-top: 5px;
+    }
+
+    /* 現在時間區域 */
+    .current-time {
+      margin-top: 10px;
+      font-size: 1.5em;
+      color: #555;
+    }
+
+    /* 底部資訊區塊 */
+    .info-box {
+      background: linear-gradient(90deg, #4da8ff, #ff718d); /* 左藍右粉 */
+      color: white;
+      padding: 10px 20px;
+      border-radius: 10px;
+      margin-top: 20px;
+      font-size: 1.2em;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* 陰影 */
+    }
+
+    /* 全螢幕按鈕 */
+    .fullscreen-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      padding: 5px 10px; /* 縮小按鈕 */
+      font-size: 0.8em;
+      background-color: #5cb85c;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* 按鈕陰影 */
+    }
+
+    .fullscreen-btn:hover {
+      background-color: #4cae4c; /* 按鈕懸停變色 */
+    }
+  </style>
+</head>
+<body>
+  <!-- 標題 -->
+  <h1>114年學測倒數</h1>
+
+  <!-- 倒數計時 -->
+  <div class="countdown-container">
+    <div class="countdown-box">
+      <span id="hours">00</span>
+      <small>小時</small>
+    </div>
+    <div class="countdown-box">
+      <span id="minutes">00</span>
+      <small>分鐘</small>
+    </div>
+    <div class="countdown-box">
+      <span id="seconds">00</span>
+      <small>秒</small>
+    </div>
+  </div>
+
+  <!-- 現在時間 -->
+  <div class="current-time" id="current-time">現在時間：--:--:--</div>
+
+  <!-- 底部資訊 -->
+  <div class="info-box">考試日期：114年1月18日至20日</div>
+
+  <!-- 全螢幕按鈕 -->
+  <button class="fullscreen-btn" onclick="toggleFullscreen()">全螢幕</button>
+
+  <script>
+    function formatTimeUnit(unit) {
+      return unit < 10 ? `0${unit}` : unit;
+    }
+
+    function updateCountdown() {
+      const examDate = new Date('2025-01-18T09:20:00');
+      const now = new Date();
+      const specialStart = new Date('2025-01-17T12:00:00');
+      const specialEnd = new Date('2025-01-17T12:15:00');
+
+      if (now >= specialStart && now < specialEnd) {
+        document.querySelector('.countdown-container').innerHTML = "<div class='countdown-box' style='background-color: #ff5c5c;'>學測順利！</div>";
+      } else {
+        const timeDiff = examDate - now;
+        if (timeDiff > 0) {
+          const hours = formatTimeUnit(Math.floor(timeDiff / (1000 * 60 * 60)));
+          const minutes = formatTimeUnit(Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60)));
+          const seconds = formatTimeUnit(Math.floor((timeDiff % (1000 * 60)) / 1000));
+
+          document.querySelector('.countdown-container').innerHTML = `
+            <div class="countdown-box"><span id="hours">${hours}</span><small>小時</small></div>
+            <div class="countdown-box"><span id="minutes">${minutes}</span><small>分鐘</small></div>
+            <div class="countdown-box"><span id="seconds">${seconds}</span><small>秒</small></div>
+          `;
+        } else {
+          document.querySelector('.countdown-container').innerHTML = "<div class='countdown-box' style='background-color: #ff5c5c;'>學測開始了！加油！</div>";
+        }
+      }
+    }
+
+    function updateCurrentTime() {
+      const now = new Date();
+      const currentTimeStr = `現在時間：${formatTimeUnit(now.getHours())}:${formatTimeUnit(now.getMinutes())}:${formatTimeUnit(now.getSeconds())}`;
+      document.getElementById('current-time').textContent = currentTimeStr;
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+        document.body.classList.add('fullscreen');
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+          document.body.classList.remove('fullscreen');
+        }
+      }
+    }
+
+    setInterval(updateCountdown, 1000);
+    setInterval(updateCurrentTime, 1000);
+    updateCountdown();
+    updateCurrentTime();
+  </script>
+</body>
+</html>
+
